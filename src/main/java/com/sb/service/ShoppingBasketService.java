@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import javax.money.Monetary;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +46,11 @@ public class ShoppingBasketService {
     }
 
     public Money calculateTotalCostOfItemsInBasket(List<String> basketItems) {
-        Double totalPrice = basketItems.stream()
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet().stream()
-                .mapToDouble(e ->
-                        (calculatePriceIncludingOfferAndDiscount(e.getKey(), e.getValue()).doubleValue())).sum();
+        Double totalPrice = basketItems.stream().distinct()
+                .mapToDouble(item ->
+                        (calculatePriceIncludingOfferAndDiscount(item, (long)Collections.frequency(basketItems, item))
+                                .doubleValue())).sum();
+
         return Money.of(totalPrice, Monetary.getCurrency("GBP"));
     }
 }
