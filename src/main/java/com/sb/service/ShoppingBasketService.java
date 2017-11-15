@@ -48,9 +48,8 @@ public class ShoppingBasketService {
         Double totalPrice = basketItems.stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
-                .map(e -> calculatePriceIncludingOfferAndDiscount(e.getKey(), e.getValue()))
-                .collect(Collectors.toList()).parallelStream()
-                .mapToDouble(o-> o.doubleValue()).sum();
+                .mapToDouble(e ->
+                        (calculatePriceIncludingOfferAndDiscount(e.getKey(), e.getValue()).doubleValue())).sum();
         return Money.of(totalPrice, Monetary.getCurrency("GBP"));
     }
 }
